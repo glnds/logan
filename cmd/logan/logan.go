@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/aws/aws-secretsmanager-caching-go/secretcache"
 	"github.com/glnds/logan/internal/logan"
 	"go.uber.org/zap"
+	// "github.com/aws/aws-lambda-go/lambda"
 )
 
-var logger *zap.Logger
-
-var version, build, commit, date string
+var (
+	secretCache, _               = secretcache.New()
+	logger                       *zap.Logger
+	version, build, commit, date string
+)
 
 func main() {
 	// 	conf := masl.GetConfig()
@@ -23,14 +27,21 @@ func main() {
 	// logger.Info("------------------ w00t w00t logan for you!?  ------------------")
 
 	// flags := parseFlags(conf)
-	logger.Info("Parsed the commandline flags")
+	logger.Info("Started...")
 
-	// DoLogan()
+	DoLogan()
 	return
 }
 
 // DoMasl Allow other tools to integrate with Masl to assume an AWS role
 func DoLogan() {
-	fmt.Println("No  masl for you! You don't have permissions to any account!")
+	// lambda.Start(HandleRequest)
+	logger.Info("Get Secret...")
+	result, error := secretCache.GetSecretString("test-secret")
+	fmt.Println(result)
+	fmt.Println(error)
+
+	logger.Info("Secret retrieved...")
+	// Use the secret, return success
 	os.Exit(0)
 }
